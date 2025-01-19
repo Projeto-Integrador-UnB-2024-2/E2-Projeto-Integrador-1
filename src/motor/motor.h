@@ -11,14 +11,15 @@ typedef struct {
     uint8_t leftMotorPWM;
     float tension;
     bool direction;
-} Motor;
+} ModuleMotor;
 
-void motorInit(Motor *motor, uint8_t rightMotorEnable, uint8_t leftMotorEnable, 
+void motorInit(ModuleMotor *motor, uint8_t rightMotorEnable, uint8_t leftMotorEnable, 
 uint8_t rightMotorPWM, uint8_t leftMotorPWM, float tension, bool direction);
-void moveForward(Motor *motor);
-void moveBackward(Motor *motor);
-void turnLeft(Motor *motor);
-void turnRight(Motor *motor);
-void stopMotor(Motor *motor);
+void moveForward(ModuleMotor *motor);
+void moveBackward(ModuleMotor *motor);
+void turnLeft(ModuleMotor *motor);
+void turnRight(ModuleMotor *motor);
+void stopMotor(ModuleMotor *motor);
+void debugMotorState(ModuleMotor *motor);
 
 #endif
