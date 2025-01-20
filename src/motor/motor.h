@@ -7,14 +7,15 @@
 typedef struct {
     uint8_t rightMotorEnable;
     uint8_t leftMotorEnable;
-    uint8_t rightMotorPWM;
-    uint8_t leftMotorPWM;
+    uint8_t rightMotorPWMF;
+    uint8_t leftMotorPWMF;
+    uint8_t rightMotorPWMB;
+    uint8_t leftMotorPWMB;
     float tension;
-    bool direction;
 } ModuleMotor;
 
 void motorInit(ModuleMotor *motor, uint8_t rightMotorEnable, uint8_t leftMotorEnable, 
-uint8_t rightMotorPWM, uint8_t leftMotorPWM, float tension, bool direction);
+uint8_t rightMotorPWMF, uint8_t leftMotorPWMF, uint8_t rightMotorPWMB, uint8_t leftMotorPWMB, float tension);
 void moveForward(ModuleMotor *motor);
 void moveBackward(ModuleMotor *motor);
 void turnLeft(ModuleMotor *motor);

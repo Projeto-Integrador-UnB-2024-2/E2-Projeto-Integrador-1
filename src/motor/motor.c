@@ -3,81 +3,72 @@
 #include <Arduino.h>
 
 void motorInit(ModuleMotor *motor, uint8_t rightMotorEnable, uint8_t leftMotorEnable, 
-uint8_t rightMotorPWM, uint8_t leftMotorPWM, float tension, bool direction) {
+uint8_t rightMotorPWMF, uint8_t leftMotorPWMF, uint8_t rightMotorPWMB, uint8_t leftMotorPWMB, bool tension) {
     motor->rightMotorEnable = rightMotorEnable;
     motor->leftMotorEnable = leftMotorEnable;
-    motor->rightMotorPWM = rightMotorPWM;
-    motor->leftMotorPWM = leftMotorPWM;
+    motor->rightMotorPWMF = rightMotorPWMF;
+    motor->leftMotorPWMF = leftMotorPWMF;
+    motor->rightMotorPWMB = rightMotorPWMB;
+    motor->leftMotorPWMB = leftMotorPWMB;
     motor->tension = tension;
-    motor->direction = direction;
 
     pinMode(motor->rightMotorEnable, OUTPUT);
     pinMode(motor->leftMotorEnable, OUTPUT);
-    pinMode(motor->rightMotorPWM, OUTPUT);
-    pinMode(motor->leftMotorPWM, OUTPUT);
+    pinMode(motor->rightMotorPWMF, OUTPUT);
+    pinMode(motor->rightMotorPWMB, OUTPUT);
+    pinMode(motor->leftMotorPWMF, OUTPUT);
+    pinMode(motor->leftMotorPWMB, OUTPUT);
 
-    digitalWrite(motor->rightMotorEnable, LOW);
-    digitalWrite(motor->leftMotorEnable, LOW);
-
-    analogWrite(motor->rightMotorPWM, 0);
-    analogWrite(motor->leftMotorPWM, 0);
+    stopMotor(&motor);
 }
 
 void moveForward(ModuleMotor *motor) {
-    motor->direction = true;
-
     digitalWrite(motor->rightMotorEnable, HIGH);
     digitalWrite(motor->leftMotorEnable, HIGH);
 
-    analogWrite(motor->rightMotorPWM, motor->tension * 255);
-    analogWrite(motor->leftMotorPWM, motor->tension * 255);
+    analogWrite(motor->rightMotorPWMF, motor->tension * 255);
+    analogWrite(motor->leftMotorPWMF, motor->tension * 255);
 }
 
 void moveBackward(ModuleMotor *motor) {
-    motor->direction = false;
-
     digitalWrite(motor->rightMotorEnable, HIGH);
     digitalWrite(motor->leftMotorEnable, HIGH);
 
-    analogWrite(motor->rightMotorPWM, motor->tension * 255);
-    analogWrite(motor->leftMotorPWM, motor->tension * 255);
+    analogWrite(motor->rightMotorPWMB, motor->tension * 255);
+    analogWrite(motor->leftMotorPWMB, motor->tension * 255);
 }
 
 void turnLeft(ModuleMotor *motor) {
-    motor->direction = false;
-
     digitalWrite(motor->rightMotorEnable, HIGH);
     digitalWrite(motor->leftMotorEnable, HIGH);
 
-    analogWrite(motor->rightMotorPWM, motor->tension * 255);
-    analogWrite(motor->leftMotorPWM, 0);
+    analogWrite(motor->leftMotorPWMF, motor->tension * 255);
+    analogWrite(motor->rightMotorPWMB, motor->tension * 255);
 }
 
 void turnRight(ModuleMotor *motor) {
-    motor->direction = true;
-
     digitalWrite(motor->rightMotorEnable, HIGH);
     digitalWrite(motor->leftMotorEnable, HIGH);
 
-    analogWrite(motor->rightMotorPWM, 0);
-    analogWrite(motor->leftMotorPWM, motor->tension * 255);
+    analogWrite(motor->rightMotorPWMF, motor->tension * 255);
+    analogWrite(motor->leftMotorPWMB, motor->tension * 255);
 }
 
 void stopMotor(ModuleMotor *motor) {
     digitalWrite(motor->rightMotorEnable, LOW);
     digitalWrite(motor->leftMotorEnable, LOW);
 
-    analogWrite(motor->rightMotorPWM, 0);
-    analogWrite(motor->leftMotorPWM, 0);
+    analogWrite(motor->rightMotorPWMF, 0);
+    analogWrite(motor->rightMotorPWMB, 0);
+    analogWrite(motor->leftMotorPWMF, 0);
+    analogWrite(motor->leftMotorPWMB, 0);
 }
 
 void debugMotorState(ModuleMotor *motor) {
-    Serial.print("Right Motor Enable: ");
-    Serial.println(motor->rightMotorEnable);
-    Serial.print("Left Motor Enable: ");
-    Serial.println(motor->leftMotorEnable);
     Serial.print("Tension: ");
     Serial.println(motor->tension);
-    Serial.print("Direction: ");
-    Serial.println(motor->direction ? "Forward" : "Backward");
+    Serial.print("Right Direction: ");
+    Serial.println(motor->rightMotorPWMB ? "Forward" : "Backward");
+    Serial.print("Left Direction: ");
+    Serial.println(motor->leftMotorPWMB ? "Forward" : "Backward");
 }
