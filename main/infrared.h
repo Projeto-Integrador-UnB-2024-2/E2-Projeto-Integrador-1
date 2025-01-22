@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 typedef struct {
-    uint8_t pin;
+    int pin;
     int edgeDetection;
 } ModuleInfrared;
 

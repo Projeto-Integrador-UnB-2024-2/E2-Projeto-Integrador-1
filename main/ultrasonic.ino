@@ -9,12 +9,9 @@ void ultrasonicInit(ModuleUltrasonic *ultrasonic, uint8_t trigger, uint8_t echo)
 
     ultrasonic->distance = 0;
     
-    digitalWrite(ultrasonic->trigger, HIGH);
+    digitalWrite(trigger, HIGH);
 }
 
-void stopSensors(ModuleUltrasonic *ultrasonic) {
-    digitalWrite(ultrasonic->trigger, LOW);
-}
 
 int readDistance(ModuleUltrasonic *ultrasonic) {
     ultrasonic->distance = ultrasonic->sensor->Ranging(CM);

@@ -2,7 +2,7 @@
 #include "Arduino.h"
 #include "infrared.h"
 
-void infraredInit(ModuleInfrared *infrared, uint8_t pin, int edgeDetection) {
+void infraredInit(ModuleInfrared *infrared, int pin, int edgeDetection) {
     infrared->pin = pin;
     infrared->edgeDetection = edgeDetection;
     pinMode(infrared->pin, INPUT);

@@ -3,38 +3,29 @@
 #include "ultrasonic.h"
 #include "infrared.h"
 
-#define THRESHOLD 500 // Valor limite para deteccao da borda
+#define THRESHOLD 30// Valor limite para deteccao da borda
 #define TRIGGER_PULSE_DURATION 20 // Duracao do pulso de trigger
 #define ROBOT_WEIGHT 0.0 
+
+#define SENSOR_LEFT_PIN A0 // Pino do sensor esquerdo
+#define SENSOR_RIGHT_PIN A1 // Pino do sensor direito
 
 ModuleMotor motors;
 ModuleUltrasonic ultrasonics[3];
 ModuleInfrared infraredSensors[2];
 
 void setup() {
-    motorInit(&motors, 7, 11, 6, 10, 5, 0);
+    int sensorLeftValue = analogRead(SENSOR_LEFT_PIN); 
+    int sensorRightValue = analogRead(SENSOR_RIGHT_PIN); 
+
+    motorInit(&motors, 7, 11, 6, 10, 5, 0.7);
     ultrasonicInit(&ultrasonics[0], 8, 2);
     ultrasonicInit(&ultrasonics[1], 8, 3);
-    ultrasonicInit(&ultrasonics[2], 8, 4);
-    infraredInit(&infraredSensors[0], 19, THRESHOLD);
-    infraredInit(&infraredSensors[1], 20, THRESHOLD);
+    ultrasonicInit(&ultrasonics[2], 8, 13);
+    infraredInit(&infraredSensors[0], sensorLeftValue, THRESHOLD);
+    infraredInit(&infraredSensors[1], sensorRightValue, THRESHOLD);
 
     Serial.begin(9600);
-}
-
-int detectClosestObject() {
-    int distance[3];
-    int minimun, index = -1;
-
-    for (int i = 0; i < 3; i++) {
-        distance[i] = readDistance(&ultrasonics[i]);
-        if (i == 0 || distance[i] ) {
-            minimun = distance[i];
-            index = i;
-        }
-    }
-
-    return index;
 }
 
 int isOnEdge() {
@@ -42,20 +33,31 @@ int isOnEdge() {
 }
 
 void loop() {
-    int closestObject = detectClosestObject();  
-    if (closestObject != -1 && distances[closestObject] < 50) { // Objeto detectado a menos de 50 cm
+   int distances[3];
+    int minimun = 999, index = -1, i;
+
+    for (int i = 0; i < 3; i++) {
+        distances[i] = readDistance(&ultrasonics[i]);
+        if (distances[i] < minimun) {
+            minimun = distances[i];
+            index = i;
+        }
+    }
+
+    
+    if (index != -1 && distances[index] < 400) { // Objeto detectado a menos de 50 cm
 
         // Alinha com o objeto
-        if (closestObject == 0) turnLeft(&motors);
-        else if (closestObject == 2) turnRight(&motors);
+        if (index == 0) turnLeft(&motors);
+        else if (index == 2) turnRight(&motors);
         delay(500);
 
         // Aproxima-se do objeto
         moveForward(&motors);
-        while (measureDistance(&ultrasonics[closestObject]) > 10) {
+        while (readDistance(&ultrasonics[index]) > 10) {
             if (isOnEdge()) {
                 stopMotor(&motors);
-                return; // Evita sair da arena
+                break; // Evita sair da arena
             }
         }
         stopMotor(&motors);
@@ -63,7 +65,7 @@ void loop() {
         // Empurra o objeto
         moveForward(&motors);
         while (!isOnEdge()) {
-            delay(100); // Continua empurrando enquanto não está na borda
+            delay(600); // Continua empurrando enquanto não está na borda
         }
         stopMotor(&motors);
     } 
@@ -71,12 +73,10 @@ void loop() {
     else {
         // Caso nenhum objeto seja detectado, o robô busca girando
         turnLeft(&motors);
-        delay(1000);
+        delay(600);
         stopMotor(&motors);
-    }
-
-    delay(500); 
-    
+    } 
+ delay(100);   
 }
 
 // long distancia;
