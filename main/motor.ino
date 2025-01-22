@@ -12,8 +12,8 @@ void stopMotor(ModuleMotor *motor) {
 }
 
 void motorInit(ModuleMotor *motor, uint8_t motorEnable, uint8_t rightMotorPWMF,
- uint8_t leftMotorPWMF, uint8_t rightMotorPWMB, uint8_t leftMotorPWMB, bool tension) {
-    motor->rightMotorEnable = motorEnable;
+ uint8_t leftMotorPWMF, uint8_t rightMotorPWMB, uint8_t leftMotorPWMB, float tension) {
+    motor->motorEnable = motorEnable;
     motor->rightMotorPWMF = rightMotorPWMF;
     motor->leftMotorPWMF = leftMotorPWMF;
     motor->rightMotorPWMB = rightMotorPWMB;
@@ -26,7 +26,7 @@ void motorInit(ModuleMotor *motor, uint8_t motorEnable, uint8_t rightMotorPWMF,
     pinMode(motor->leftMotorPWMF, OUTPUT);
     pinMode(motor->leftMotorPWMB, OUTPUT);
 
-    stopMotor(&motor);
+    stopMotor(motor);
 }
 
 void moveForward(ModuleMotor *motor) {

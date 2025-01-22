@@ -1,8 +1,7 @@
-#include <stdio.h>
 #include <Arduino.h>
-#include "src/microcontroller/motor/motor.h"
-#include "src/microcontroller/ultrasonicSensor/ultrasonic.h"
-#include "src/microcontroller/infraredSensor/infrared.h"
+#include "motor.h"
+#include "ultrasonic.h"
+#include "infrared.h"
 
 #define THRESHOLD 500 // Valor limite para deteccao da borda
 #define TRIGGER_PULSE_DURATION 20 // Duracao do pulso de trigger
@@ -17,10 +16,67 @@ void setup() {
     ultrasonicInit(&ultrasonics[0], 8, 2);
     ultrasonicInit(&ultrasonics[1], 8, 3);
     ultrasonicInit(&ultrasonics[2], 8, 4);
-    infraredInit(&infraredSensors[0], A0);
-    infraredInit(&infraredSensors[1], A1);
+    infraredInit(&infraredSensors[0], 19, THRESHOLD);
+    infraredInit(&infraredSensors[1], 20, THRESHOLD);
 
     Serial.begin(9600);
+}
+
+int detectClosestObject() {
+    int distance[3];
+    int minimun, index = -1;
+
+    for (int i = 0; i < 3; i++) {
+        distance[i] = readDistance(&ultrasonics[i]);
+        if (i == 0 || distance[i] ) {
+            minimun = distance[i];
+            index = i;
+        }
+    }
+
+    return index;
+}
+
+int isOnEdge() {
+    return verifyEdge(&infraredSensors[0]) || verifyEdge(&infraredSensors[1]);
+}
+
+void loop() {
+    int closestObject = detectClosestObject();  
+    if (closestObject != -1 && distances[closestObject] < 50) { // Objeto detectado a menos de 50 cm
+
+        // Alinha com o objeto
+        if (closestObject == 0) turnLeft(&motors);
+        else if (closestObject == 2) turnRight(&motors);
+        delay(500);
+
+        // Aproxima-se do objeto
+        moveForward(&motors);
+        while (measureDistance(&ultrasonics[closestObject]) > 10) {
+            if (isOnEdge()) {
+                stopMotor(&motors);
+                return; // Evita sair da arena
+            }
+        }
+        stopMotor(&motors);
+
+        // Empurra o objeto
+        moveForward(&motors);
+        while (!isOnEdge()) {
+            delay(100); // Continua empurrando enquanto não está na borda
+        }
+        stopMotor(&motors);
+    } 
+    
+    else {
+        // Caso nenhum objeto seja detectado, o robô busca girando
+        turnLeft(&motors);
+        delay(1000);
+        stopMotor(&motors);
+    }
+
+    delay(500); 
+    
 }
 
 // long distancia;
@@ -74,8 +130,8 @@ void setup() {
 
 
 
-//
-//
+
+
 //// Configuração dos sensores e motores
 //#define TRIGGER_PIN 8
 //#define TRIGGER_PULSE_DURATION 20
@@ -201,4 +257,3 @@ void setup() {
 //
 //    delay(500); // Pequena pausa antes de reiniciar o loop
 //}
-

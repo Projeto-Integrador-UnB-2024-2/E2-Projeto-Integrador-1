@@ -5,7 +5,7 @@
 #include <Ultrasonic.h>
 
 typedef struct {
-    Ultrasonic sensor;
+    Ultrasonic *sensor;
     int distance;
 } ModuleUltrasonic;
 
