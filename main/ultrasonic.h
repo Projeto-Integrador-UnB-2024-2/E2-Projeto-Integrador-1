@@ -6,6 +6,7 @@
 
 typedef struct {
     Ultrasonic *sensor;
+    uint8_t trigger;
     int distance;
 } ModuleUltrasonic;
 

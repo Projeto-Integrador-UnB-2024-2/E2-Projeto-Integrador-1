@@ -9,5 +9,12 @@ void infraredInit(ModuleInfrared *infrared, int pin, int edgeDetection) {
 }
 
 int verifyEdge(ModuleInfrared *infrared) {
-    return analogRead(infrared->pin) < infrared->edgeDetection;
+     int totalReading = 0;
+
+    for (int i = 0; i < 5; i++) {
+        totalReading += analogRead(infrared->pin);
+        delay(10); 
+    }
+
+    return (totalReading/5) < infrared->edgeDetection; 
 }

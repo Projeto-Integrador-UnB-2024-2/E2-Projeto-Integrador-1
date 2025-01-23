@@ -33,13 +33,17 @@ void moveForward(ModuleMotor *motor) {
     digitalWrite(motor->motorEnable, HIGH);
 
     analogWrite(motor->rightMotorPWMF, motor->tension * 255);
+    analogWrite(motor->rightMotorPWMB, 0);
     analogWrite(motor->leftMotorPWMF, motor->tension * 255);
+    analogWrite(motor->leftMotorPWMB, 0);
 }
 
 void moveBackward(ModuleMotor *motor) {
     digitalWrite(motor->motorEnable, HIGH);
 
+    analogWrite(motor->rightMotorPWMF, 0);
     analogWrite(motor->rightMotorPWMB, motor->tension * 255);
+    analogWrite(motor->leftMotorPWMF, 0);
     analogWrite(motor->leftMotorPWMB, motor->tension * 255);
 }
 
@@ -47,12 +51,16 @@ void turnLeft(ModuleMotor *motor) {
     digitalWrite(motor->motorEnable, HIGH);
 
     analogWrite(motor->leftMotorPWMF, motor->tension * 255);
+    analogWrite(motor->leftMotorPWMB, 0);
     analogWrite(motor->rightMotorPWMB, motor->tension * 255);
+    analogWrite(motor->rightMotorPWMF, 0);
 }
 
 void turnRight(ModuleMotor *motor) {
     digitalWrite(motor->motorEnable, HIGH);
 
     analogWrite(motor->rightMotorPWMF, motor->tension * 255);
+    analogWrite(motor->rightMotorPWMB, 0);
     analogWrite(motor->leftMotorPWMB, motor->tension * 255);
+    analogWrite(motor->leftMotorPWMF, 0);
 }
