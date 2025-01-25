@@ -1,21 +1,23 @@
 #include <Ultrasonic.h>
 #include "Arduino.h"
 
+// Initializes the ultrasonic sensor with the specified pins
 void ultrasonicInit(ModuleUltrasonic *ultrasonic, uint8_t trigger, uint8_t echo) {
-    ultrasonic->sensor = new Ultrasonic(trigger, echo);
-    ultrasonic->trigger = trigger;
-    ultrasonic->distance = 0;
+    ultrasonic->sensor = new Ultrasonic(trigger, echo); // Creates a new Ultrasonic object
+    ultrasonic->trigger = trigger; // Assigns the trigger pin
+    ultrasonic->distance = 0; // Initializes the distance to zero
 
-    pinMode(trigger, OUTPUT);
-    pinMode(echo, INPUT);
-    digitalWrite(trigger, LOW);
-    delay(2);
+    pinMode(trigger, OUTPUT); // Configures the trigger pin as output
+    pinMode(echo, INPUT); // Configures the echo pin as input
+    digitalWrite(trigger, LOW); // Ensures the trigger pin is low initially
+    delay(2); // Short delay to stabilize the sensor
 }
 
+// Reads the distance measured by the ultrasonic sensor
 int readDistance(ModuleUltrasonic *ultrasonic) {
-    digitalWrite(ultrasonic->trigger, HIGH);
-    delayMicroseconds(20);
-    digitalWrite(ultrasonic->trigger, LOW);
-    ultrasonic->distance = ultrasonic->sensor->Ranging(CM);
-    return ultrasonic->distance;
+    digitalWrite(ultrasonic->trigger, HIGH); // Sends a high pulse to the trigger pin
+    delayMicroseconds(20); // Pulse duration (20 microseconds)
+    digitalWrite(ultrasonic->trigger, LOW); // Stops the pulse
+    ultrasonic->distance = ultrasonic->sensor->Ranging(CM); // Gets the mensured distance in centimeters
+    return ultrasonic->distance; // Returns the measured distance
 }
