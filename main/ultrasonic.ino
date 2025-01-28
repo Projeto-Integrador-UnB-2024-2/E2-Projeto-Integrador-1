@@ -7,8 +7,8 @@ void ultrasonicInit(ModuleUltrasonic *ultrasonic, uint8_t trigger, uint8_t echo)
     ultrasonic->trigger = trigger; // Assigns the trigger pin
     ultrasonic->distance = 0; // Initializes the distance to zero
 
-    pinMode(trigger, OUTPUT); // Configures the trigger pin as output
     pinMode(echo, INPUT); // Configures the echo pin as input
+    pinMode(trigger, OUTPUT); // Configures the trigger pin as output
     digitalWrite(trigger, LOW); // Ensures the trigger pin is low initially
     delay(2); // Short delay to stabilize the sensor
 }
@@ -17,7 +17,7 @@ void ultrasonicInit(ModuleUltrasonic *ultrasonic, uint8_t trigger, uint8_t echo)
 int readDistance(ModuleUltrasonic *ultrasonic) {
     digitalWrite(ultrasonic->trigger, HIGH); // Sends a high pulse to the trigger pin
     delayMicroseconds(20); // Pulse duration (20 microseconds)
-    digitalWrite(ultrasonic->trigger, LOW); // Stops the pulse
     ultrasonic->distance = ultrasonic->sensor->Ranging(CM); // Gets the mensured distance in centimeters
+    digitalWrite(ultrasonic->trigger, LOW); // Stops the pulse
     return ultrasonic->distance; // Returns the measured distance
 }

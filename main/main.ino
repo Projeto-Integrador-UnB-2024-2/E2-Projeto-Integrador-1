@@ -3,73 +3,62 @@
 #include "ultrasonic.h"
 #include "infrared.h"
 
-#define THRESHOLD 30 // Edge detection threshold for infrared sensors
+#define THRESHOLD 35 // Edge detection threshold for infrared sensors
 #define ROBOT_WEIGHT 0.0 
+#define SENSOR_LEFT_PIN A0 // Pin connected to the left infrared sensor
+#define SENSOR_RIGHT_PIN A1 // Pin connected to the right infrared sensor
 
 ModuleMotor motors; 
 ModuleUltrasonic ultrasonics[3]; 
 ModuleInfrared infraredSensors[2];
 
 void setup() {
-    // Read initial values of infrared sensors
-    int infraredLeft = analogRead(A0), infraredRight = analogRead(A1); 
-
     // Initialize motor and sensors with specified pins and parameters
     motorInit(&motors, 7, 11, 10, 6, 5, 0.6); 
     ultrasonicInit(&ultrasonics[0], 8, 2); 
     ultrasonicInit(&ultrasonics[1], 8, 3);
     ultrasonicInit(&ultrasonics[2], 8, 13);
-    infraredInit(&infraredSensors[0], infraredLeft, THRESHOLD);
-    infraredInit(&infraredSensors[1], infraredRight, THRESHOLD);
+    infraredInit(&infraredSensors[0], SENSOR_LEFT_PIN, THRESHOLD);
+    infraredInit(&infraredSensors[1], SENSOR_RIGHT_PIN, THRESHOLD);
 
     Serial.begin(9600);
 }
 
-// Check if either infrared sensor is detecting an edge
-int isOnEdge() {
-    return verifyEdge(&infraredSensors[0]) || verifyEdge(&infraredSensors[1]);
-}
+void loop() {
+    int edgeDetectedRight = verifyEdge(&infraredSensors[0]);
+    int edgeDetectedLeft = verifyEdge(&infraredSensors[1]);
+    Serial.print("Edge detected right: ");
+    Serial.println(edgeDetectedRight);
+    Serial.print("Edge detected left: ");
+    Serial.println(edgeDetectedLeft);
 
-void detectObjects() {
-    int distances[3];
-    for (int i = 0; i < 3; i++)
+    int distances[3] = {0};
+
+    for (int i = 0; i < 3; i++) {
         distances[i] = readDistance(&ultrasonics[i]);
+        Serial.print("Distance ultrasonic ");
+        Serial.print(i);
+        Serial.print(": ");
+        Serial.println(distances[i]);
+    }
 
-    // If the middle sensor detects an object closer than 50 cm, move forward
-    if (distances[1] < 50) {
-        moveForward(&motors);
-        delay(100); // Move for a short period of time
+    if (edgeDetectedLeft || edgeDetectedRight) {
+        stopMotor(&motors);
+        delay(50);
+        moveBackward(&motors);
+        delay(100);
+        turnLeft(&motors);
+        delay(100);
     } 
     
-    else {
-        // Determinate which side has the closest object (left or right)
-        int minimum = (distances[0] < distances[2]) ? 0 : 2;
-        if (minimum == 0) turnLeft(&motors); // Turn left if the left side is closer
-        else turnRight(&motors); // Turn right if the right side is closer
-    }
-}
+    else if (distances[0] > 50 && distances[1] > 50 && distances[2] > 50) 
+        turnRight(&motors); 
 
-// Reset the robot's position by stopping the motors, moving backwards, and turning left
-void resetPosition() {
-    stopMotor(&motors);
-    delay(50);
-    moveBackward(&motors);
-    delay(100);
-    turnLeft(&motors);
-    delay(100);
-}
+    else if (distances[1] <= 50) {
+        moveForward(&motors);
+        delay(30);
+    } 
 
-//float calculateTractionForce() {
-//    
-//}
-
-void loop() {
-    // If the robot is on the edge, reset its position
-    if (isOnEdge()) {
-        resetPosition();
-        return;
-    }
-
-    detectObjects(); // Detect objects and move accordingly
+    else (distances[0] < distances[2]) ? turnLeft(&motors) : turnRight(&motors);
     delay(100);
 }

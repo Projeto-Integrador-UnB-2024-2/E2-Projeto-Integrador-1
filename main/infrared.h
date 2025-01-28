@@ -5,7 +5,7 @@
 
 // Structure representing an infrared sensor module
 typedef struct {
-    int pin; // Pin connected to the infrared sensor
+    uint8_t pin; // Pin connected to the infrared sensor
     int edgeDetection; // Threshold value to detect the edge
 } ModuleInfrared;
 
