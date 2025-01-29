@@ -13,10 +13,5 @@ void infraredInit(ModuleInfrared *infrared, uint8_t pin, int edgeDetection) {
 int verifyEdge(ModuleInfrared *infrared) {
     int total = 0;
 
-    for(int i = 0; i < 5; i++) {
-        total += analogRead(infrared->pin); // Reads the analog value from the infrared sensor
-        delay(10);
-    }
-
     return (total / 5) > infrared->edgeDetection; 
 }
