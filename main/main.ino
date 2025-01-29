@@ -1,65 +1,105 @@
 #include <Arduino.h>
-#include "motor.h"
-#include "ultrasonic.h"
-#include "infrared.h"
+#include <Ultrasonic.h>
+#include <stdint.h>
 
-#define THRESHOLD 35 // Edge detection threshold for infrared sensors
-#define ROBOT_WEIGHT 0.0 
-#define SENSOR_LEFT_PIN A1 // Pin connected to the left infrared sensor
-#define SENSOR_RIGHT_PIN A0 // Pin connected to the right infrared sensor
+//#define THRESHOLD 35
+#define ROBOT_WEIGHT 0.0
+// infrared
+#define SENSOR_LEFT_PIN A1
+#define SENSOR_RIGHT_PIN A0
+// motor
+#define MOTOR_ENABLE 7
+#define MOTOR_1_R 11
+#define MOTOR_1_L 10
+#define MOTOR_2_R 6
+#define MOTOR_2_L 5
+// ultrasonics
+#define TRIGGER_PIN 8
 
-ModuleMotor motors; 
-ModuleUltrasonic ultrasonics[3]; 
-ModuleInfrared infraredSensors[2];
+Ultrasonic ultrasonics[] = {
+    {8, 2},
+    {8, 4},
+    {8, 13}
+};
+
+int ultrasonicsPins[] = {2, 4, 13};
+int distances[3];
 
 void setup() {
-    // Initialize motor and sensors with specified pins and parameters
-    motorInit(&motors, 7, 11, 10, 6, 5, 0.2); 
-    ultrasonicInit(&ultrasonics[0], 8, 2); 
-    ultrasonicInit(&ultrasonics[1], 8, 4);
-    ultrasonicInit(&ultrasonics[2], 8, 13);
-    infraredInit(&infraredSensors[0], SENSOR_LEFT_PIN, THRESHOLD);
-    infraredInit(&infraredSensors[1], SENSOR_RIGHT_PIN, THRESHOLD);
+    pinMode(SENSOR_LEFT_PIN, INPUT);
+    pinMode(SENSOR_RIGHT_PIN, INPUT);
+
+    pinMode(MOTOR_ENABLE, OUTPUT);
+    pinMode(MOTOR_1_R, OUTPUT);
+    pinMode(MOTOR_1_L, OUTPUT);
+    pinMode(MOTOR_2_R, OUTPUT);
+    pinMode(MOTOR_2_L, OUTPUT);
+    digitalWrite(MOTOR_ENABLE, LOW);
+
+    for (int i = 0; i < 3; i++) 
+        pinMode(ultrasonicsPins[i], INPUT);
+    pinMode(TRIGGER_PIN, OUTPUT);
 
     Serial.begin(9600);
 }
 
 void loop() {
-    int edgeDetectedRight = analogRead(&infraredSensors[0]);
-    int edgeDetectedLeft = analogRead(&infraredSensors[1]);
-    Serial.print("Edge detected right: ");
-    Serial.println(edgeDetectedRight);
-    Serial.print("Edge detected left: ");
-    Serial.println(edgeDetectedLeft);
+    readDistances();
+    int borda = isOnEdge();
+    
+    edgeFound();
 
-    int distances[3] = {0};
-
-    for (int i = 0; i < 3; i++) {
-        distances[i] = readDistance(&ultrasonics[i]);
-        delay(10);
-        Serial.print("Distance ultrasonic ");
-        Serial.print(i);
-        Serial.print(": ");
-        Serial.println(distances[i]);
+    while(distances[0] > 50 && distances[1] > 50 && distances[2] > 50) {
+      turnRight(0.2); 
+      readDistances();
     }
 
-    if (edgeDetectedLeft > THRESHOLD || edgeDetectedRight > THRESHOLD) {
-        stopMotor(&motors);
-        delay(50);
-        moveBackward(&motors);
-        delay(100);
-        turnLeft(&motors);
-        delay(100);
-    } 
-    
-    else if (distances[0] > 50 && distances[1] > 50 && distances[2] > 50) 
-        turnRight(&motors); 
+    while(distances[1] < 50 && !isOnEdge() && distances[1] < distances[0] && distances[1] < distances[2]) {
+      //moveForward(1-(distances[1]/50));
+      moveForward(0.2);
+      readDistances();
+    }
 
-    else if (distances[1] <= 50) {
-        moveForward(&motors);
-        delay(30);
-    } 
+    if (distances[0] < distances[2] && distances[2] < distances[1]) 
+      turnLeft(0.2);
+      
+    if (distances[2] < distances[0] && distances[0] < distances[1]) 
+      turnRight(0.2);
+}
 
-    else (distances[0] < distances[2]) ? turnLeft(&motors) : turnRight(&motors);
-    delay(100);
+int isOnEdge() {
+  int sensorLeft = digitalRead(SENSOR_LEFT_PIN);
+  Serial.print("esquerda ");
+  Serial.println(sensorLeft);
+  delay(1); //tirar dps
+  int sensorRight = digitalRead(SENSOR_RIGHT_PIN);
+  Serial.print("direita ");
+  Serial.println(sensorRight);
+  if(sensorLeft || sensorRight) return 1;
+  return 0;
+}
+
+void edgeFound(){
+  if(isOnEdge()) {
+        stop();
+        delay(1000);
+        moveBackward(0.4);
+        delay(1000);
+        turnLeft(0.4);
+        delay(100);
+    }
+}
+
+void readDistances() {
+   digitalWrite(TRIGGER_PIN, HIGH);
+    for (int i = 0; i < 3; i++) {
+        distances[i] = ultrasonics[i].Ranging(CM);
+        edgeFound();
+        delay(1);
+        Serial.print("Distance ");
+        Serial.println(i);
+        Serial.println(distances[i]);
+        Serial.println("---");
+    }
+    digitalWrite(TRIGGER_PIN, LOW);
 }
