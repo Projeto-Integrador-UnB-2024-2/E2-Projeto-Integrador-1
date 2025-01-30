@@ -66,7 +66,10 @@ void loop() {
             edgeFound();
             return;
         }
-      moveForward(0.2);
+      moveForward(0.6);
+      delay(100);
+      stop();
+      delay(500);
       readDistances();
     }
 
