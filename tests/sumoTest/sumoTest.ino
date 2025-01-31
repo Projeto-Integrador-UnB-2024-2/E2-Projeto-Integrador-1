@@ -78,7 +78,7 @@ void loop() {
     if (distances[0] < distances[2] && distances[2] < distances[1]) 
       turnLeft(0.4);
       
-    if (distances[2] < distances[0] && distances[0] < distances[1]) 
+    else if (distances[2] < distances[0] && distances[0] < distances[1]) 
       turnRight(0.4);
 }
 
