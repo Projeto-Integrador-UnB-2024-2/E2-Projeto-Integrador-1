@@ -24,6 +24,8 @@ Ultrasonic ultrasonics[] = {
 
 int ultrasonicsPins[] = {2, 4, 13};
 int distances[3];
+int sensorLeft;
+int sensorRight;
 
 void setup() {
     pinMode(SENSOR_LEFT_PIN, INPUT);
@@ -44,55 +46,43 @@ void setup() {
 }
 
 void loop() {
+    sensorLeft = digitalRead(SENSOR_LEFT_PIN);
+    sensorRight = digitalRead(SENSOR_RIGHT_PIN);
+
+    if(sensorLeft || sensorRight) edgeFound();
+
     readDistances();
-    if(isOnEdge) {
-        edgeFound();
-        return;
-    }
 
     while(distances[0] > 50 && distances[1] > 50 && distances[2] > 50) {
-        if(isOnEdge()) {
-            edgeFound();
-            return;
-        }
-
-      turnRight(0.2); 
+      turnRight(0.4); 
       readDistances();
     }
 
-    while(distances[1] < 50 && distances[1] < distances[0] && distances[1] < distances[2]) {
-      //moveForward(1-(distances[1]/50));
-      if(isOnEdge()) {
-            edgeFound();
-            return;
+    while((!sensorLeft && !sensorRight) && distances[1] < 50 && distances[1] < distances[0] && distances[1] < distances[2]) {
+        //sintaxe: map(valor, deMenor, deMaior, paraMenor, paraMaior);
+        //float speed = map(distances[1], 50, 1, 40, 100) / 100.0; 
+        //moveForward(speed);
+        moveForward(0.7);
+
+        sensorLeft = digitalRead(SENSOR_LEFT_PIN);
+        sensorRight = digitalRead(SENSOR_RIGHT_PIN);
+
+        if(sensorLeft || sensorRight) {
+          edgeFound();
+          return;
         }
-      moveForward(0.6);
-      delay(100);
-      stop();
-      delay(500);
-      readDistances();
+        
+        readDistances();
     }
 
     if (distances[0] < distances[2] && distances[2] < distances[1]) 
-      turnLeft(0.2);
+      turnLeft(0.4);
       
     if (distances[2] < distances[0] && distances[0] < distances[1]) 
-      turnRight(0.2);
+      turnRight(0.4);
 }
 
-int isOnEdge() {
-  int sensorLeft = digitalRead(SENSOR_LEFT_PIN);
-  Serial.print("esquerda ");
-  Serial.println(sensorLeft);
-  delay(1); //tirar dps
-  int sensorRight = digitalRead(SENSOR_RIGHT_PIN);
-  Serial.print("direita ");
-  Serial.println(sensorRight);
-  if(sensorLeft || sensorRight) return 1;
-  return 0;
-}
-
-void edgeFound() {
+void edgeFound(){
     stop();
     delay(1000);
     moveBackward(0.4);
@@ -105,7 +95,6 @@ void readDistances() {
    digitalWrite(TRIGGER_PIN, HIGH);
     for (int i = 0; i < 3; i++) {
         distances[i] = ultrasonics[i].Ranging(CM);
-        edgeFound();
         delay(1);
         Serial.print("Distance ");
         Serial.println(i);
