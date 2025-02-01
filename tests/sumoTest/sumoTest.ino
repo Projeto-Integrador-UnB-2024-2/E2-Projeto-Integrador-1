@@ -53,6 +53,7 @@ void loop() {
 
     readDistances();
 
+    // **testar com if else ao inves de while** 
     while(distances[0] > 50 && distances[1] > 50 && distances[2] > 50) {
       turnRight(0.4); 
       readDistances();
@@ -95,7 +96,7 @@ void readDistances() {
    digitalWrite(TRIGGER_PIN, HIGH);
     for (int i = 0; i < 3; i++) {
         distances[i] = ultrasonics[i].Ranging(CM);
-        delay(1);
+        delayMicroseconds(10);
         Serial.print("Distance ");
         Serial.println(i);
         Serial.println(distances[i]);
