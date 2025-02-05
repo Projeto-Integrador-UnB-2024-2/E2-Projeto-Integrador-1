@@ -43,30 +43,42 @@ void setup() {
     delay(1000);
 }
 
-/* VERSAO 1.0 */
+/* VERSAO 2.0 */
 void loop() {
-  if(digitalRead(SENSOR_LEFT_PIN) || digitalRead(SENSOR_RIGHT_PIN)) {
-    stop();
-    delay(1000);
-    moveBackward(0.4);
-    delay(1000);
-    turnLeft(0.4);
-    delay(100);
+  if(detectEdge()) {
+    avoidEdge();
   }
+  else if(searchObject()) {
+    chaseObject();
+  }
+}
 
+bool detectEdge() {
+  return (digitalRead(SENSOR_LEFT_PIN) || digitalRead(SENSOR_RIGHT_PIN));
+}
+
+void avoidEdge() {
+  stop();
+  delay(1000);
+  moveBackward(0.4);
+  delay(1000);
+  turnLeft(0.4);
+  delay(100);
+}
+
+bool searchObject() {
   readDistances();
-  else if(distances[0] < 50 || distances[1] < 50 || distances[2] < 50) {
-    if (distances[1] < 50) {
-      moveForward(0.2);
-    } 
-    else if (distances[0] < distances[2]) {
-      turnLeft(0.2);
-    } 
-    else {
-      turnRight(0.2);
-    }
-  }
+  return (distances[0] < 50 || distances[1] < 50 || distances[2] < 50);
+}
 
+void chaseObject() {
+  readDistances();
+  if (distances[1] < 50) {
+    moveForward(0.2);
+  } 
+  else if (distances[0] < distances[2]) {
+    turnLeft(0.2);
+  } 
   else {
     turnRight(0.2);
   }
