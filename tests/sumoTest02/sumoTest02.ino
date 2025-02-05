@@ -81,6 +81,7 @@ void chaseObject() {
   } 
   else {
     turnRight(0.2);
+    //readDistances();
   }
 }
 
