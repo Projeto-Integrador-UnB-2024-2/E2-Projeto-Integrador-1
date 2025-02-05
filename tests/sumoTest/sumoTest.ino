@@ -55,7 +55,7 @@ void loop() {
   }
 
   readDistances();
-  else if(distances[0] < 50 || distances[1] < 50 || distances[2] < 50) {
+  if(distances[0] < 50 || distances[1] < 50 || distances[2] < 50) {
     if (distances[1] < 50) {
       moveForward(0.2);
     } 
