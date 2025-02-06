@@ -106,7 +106,3 @@ void stop() {
     analogWrite(MOTOR_2_R, 0);
     analogWrite(MOTOR_2_L, 0);
 }
-
-
-
-
