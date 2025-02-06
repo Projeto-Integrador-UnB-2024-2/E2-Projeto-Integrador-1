@@ -9,8 +9,8 @@
 #define SENSOR_RIGHT_PIN A0
 // motor
 #define MOTOR_ENABLE 7
-#define MOTOR_1_R 11
-#define MOTOR_1_L 10
+#define MOTOR_1_R 10
+#define MOTOR_1_L 11
 #define MOTOR_2_R 6
 #define MOTOR_2_L 5
 // ultrasonics
@@ -45,9 +45,8 @@ void setup() {
 
 void loop() {
     readDistances();
-    int borda = isOnEdge();
     
-    edgeFound();
+    moveForward(0.4);
 
     while(distances[0] > 50 && distances[1] > 50 && distances[2] > 50) {
       turnRight(0.2); 
@@ -82,11 +81,11 @@ int isOnEdge() {
 void edgeFound(){
   if(isOnEdge()) {
         stop();
-        delay(1000);
+        delay(2000);
         moveBackward(0.4);
-        delay(1000);
+        delay(2000);
         turnLeft(0.4);
-        delay(100);
+        delay(2000);
     }
 }
 
