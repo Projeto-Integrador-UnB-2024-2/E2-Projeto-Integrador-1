@@ -1,5 +1,3 @@
-// Ultrasom
-
 #include <Ultrasonic.h>
 #define TRIGGER_PIN 8
 #define ENABLE 7
