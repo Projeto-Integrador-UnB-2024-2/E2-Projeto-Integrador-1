@@ -117,10 +117,10 @@ void loop() {
 
 // Function to read ultrasonic sensors distances
 void readDistances() {
-  for (int i = 0; i < ultraPinCount; i++) {
+  for (int i = 0; i < 3; i++) {
     distances[i] = ultrasonics[i].Ranging(CM);
     //delay(check);
-    delay(3);
+    delay(10);
 
     // Assign a default value if the sensor fails
     if(distances[i] == 0) distances[i] = 150;
