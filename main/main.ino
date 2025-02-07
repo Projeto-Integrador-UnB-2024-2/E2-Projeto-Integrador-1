@@ -13,10 +13,10 @@
 
 // Motor control pins
 #define MOTOR_ENABLE 7
-#define MOTOR_1_R 10
-#define MOTOR_1_L 11
-#define MOTOR_2_R 6
-#define MOTOR_2_L 5
+#define MOTOR_1_R 11
+#define MOTOR_1_L 10
+#define MOTOR_2_R 5
+#define MOTOR_2_L 6
 
 // Flag for detecting edge
 volatile bool detectedEdge = false;
@@ -30,7 +30,7 @@ Ultrasonic ultrasonics[] = {
 };
 
 // Stores the distances read by the ultrasonic sensors
-int distances[3]; // distances[0] = left, distances[1] = front, distances[2] = right
+int distances[3] = {0, 0, 0}; // distances[0] = left, distances[1] = front, distances[2] = right
 //int check = 0;
 
 void setup() {
@@ -61,6 +61,7 @@ void setup() {
 void loop() {
   // If the robot detects an edge, execute an escape maneuver
   if (detectedEdge) {
+    Serial.print("ENCONTROU BORDA");
     edgeFound();
     detectedEdge = false;
   }
@@ -69,43 +70,47 @@ void loop() {
   readDistances();
 
   // Print distances read
-  for (int i = 0; i < 3; i++) {
-    Serial.print("distances ");
-    Serial.print(i);
-    Serial.print(": ");
-    Serial.println(distances[i]);
-  }
+  //for (int i = 0; i < 3; i++) {
+  //  Serial.print("distances ");
+  //  Serial.print(i);
+  //  Serial.print(": ");
+  //  Serial.println(distances[i]);
+  //}
 
   // Decision making based on the distances read
   if (distances[1] < 130 && distances[1] < distances[0] && distances[1] < distances[2]) {
+    //if (distance < 130) {
     Serial.println("---");
     Serial.println("FRONT object detected");
 
-    if (distances[1] < 100) moveForward(0.4);
-    else if (distances[1] < 50) moveForward(0.8);
-    else if (distances[1] < 15) moveForward(1);
-    else moveForward(0.2);
+    moveForward(0.3);
+    //if (distances[1] > 30 && distances[1] <= 100) moveForward(0.4);
+    //else if (distances[1] > 10 && distances[1] <= 30) moveForward(0.7);
+    //else if (distances[1] <= 10) moveForward(1);
+    //else moveForward(0.3);
   }
 
-  else if (distances[0] < 130 && distances[0] < distances[1] && distances[0] < distances[2]) {
+  else if (distances[0] < 30 && distances[0] < distances[1] && distances[0] < distances[2]) {
     Serial.println("---");
     Serial.println("LEFT object detected");
     while (distances[0] < distances[1]) {
-      turnLeft(0.2);
-      readDistances();
-    }
-  }
-  else if (distances[2] < 130 && distances[2] < distances[1] && distances[2] < distances[0]) {
-    Serial.println("---");
-    Serial.println("RIGHT object detected");
-    while (distances[2] < distances[1]) {
-      turnRight(0.2);
+      turnLeft(0.3);
       readDistances();
     }
   }
 
+  else if (distances[2] < 30 && distances[2] < distances[1] && distances[2] < distances[0]) {
+    Serial.println("---");
+    Serial.println("RIGHT object detected");
+    while (distances[2] < distances[1]) {
+      turnRight(0.3);
+      readDistances();
+    }
+  }
+  
   else {
     turnRight(0.15); // If no object is detected, keep turning right to search
+    //readDistances();
     Serial.println("---");
     Serial.println("Searching...");
   }
@@ -117,6 +122,7 @@ void loop() {
 
 // Function to read ultrasonic sensors distances
 void readDistances() {
+  //distance = ultrasonics[1].Ranging(CM);
   for (int i = 0; i < 3; i++) {
     distances[i] = ultrasonics[i].Ranging(CM);
     //delay(check);
@@ -129,7 +135,6 @@ void readDistances() {
     Serial.println(distances[i]);
     Serial.println("---");
   }
-
   //if (distances[0] == 0 || distances[1] == 0 || distances[2] == 0)
   //{
   //  check++;
@@ -144,25 +149,29 @@ void stateChange() {
 // Edge avoidance maneuver: move backward and turn
 void edgeFound() {
   moveBackward(0.4);
-  delay(1500);
+  delay(2000);
   turnRight(0.3);
   delay(500);
+  distances[0] = 0;
+  distances[1] = 0;
+  distances[2] = 0;
+  //distance = 0;
 }
 
 void moveForward(float tension) {
-  digitalWrite(MOTOR_ENABLE, HIGH);
-  analogWrite(MOTOR_1_R, 0);
-  analogWrite(MOTOR_1_L, tension * 255);
-  analogWrite(MOTOR_2_R, 0);
-  analogWrite(MOTOR_2_L, tension * 255);
-}
-
-void moveBackward(float tension) {
   digitalWrite(MOTOR_ENABLE, HIGH);
   analogWrite(MOTOR_1_R, tension * 255);
   analogWrite(MOTOR_1_L, 0);
   analogWrite(MOTOR_2_R, tension * 255);
   analogWrite(MOTOR_2_L, 0);
+}
+
+void moveBackward(float tension) {
+  digitalWrite(MOTOR_ENABLE, HIGH);
+  analogWrite(MOTOR_1_R, 0);
+  analogWrite(MOTOR_1_L, tension * 255);
+  analogWrite(MOTOR_2_R, 0);
+  analogWrite(MOTOR_2_L, tension * 255);
 }
 
 void turnRight(float tension) {
