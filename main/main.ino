@@ -31,7 +31,6 @@ Ultrasonic ultrasonics[] = {
 
 // Stores the distances read by the ultrasonic sensors
 int distances[3] = {0, 0, 0}; // distances[0] = left, distances[1] = front, distances[2] = right
-//int check = 0;
 
 void setup() {
   // Configure infrared sensors and set up interrupts for edge detection
@@ -79,9 +78,8 @@ void loop() {
 
   // Decision making based on the distances read
   if (distances[1] < 130 && distances[1] < distances[0] && distances[1] < distances[2]) {
-    //if (distance < 130) {
-    Serial.println("---");
-    Serial.println("FRONT object detected");
+    //Serial.println("---");
+    //Serial.println("FRONT object detected");
 
     moveForward(0.3);
     //if (distances[1] > 30 && distances[1] <= 100) moveForward(0.4);
@@ -91,8 +89,8 @@ void loop() {
   }
 
   else if (distances[0] < 30 && distances[0] < distances[1] && distances[0] < distances[2]) {
-    Serial.println("---");
-    Serial.println("LEFT object detected");
+    //Serial.println("---");
+    //Serial.println("LEFT object detected");
     while (distances[0] < distances[1]) {
       turnLeft(0.3);
       readDistances();
@@ -100,8 +98,8 @@ void loop() {
   }
 
   else if (distances[2] < 30 && distances[2] < distances[1] && distances[2] < distances[0]) {
-    Serial.println("---");
-    Serial.println("RIGHT object detected");
+    //Serial.println("---");
+    //Serial.println("RIGHT object detected");
     while (distances[2] < distances[1]) {
       turnRight(0.3);
       readDistances();
@@ -110,22 +108,15 @@ void loop() {
   
   else {
     turnRight(0.15); // If no object is detected, keep turning right to search
-    //readDistances();
-    Serial.println("---");
-    Serial.println("Searching...");
+    //Serial.println("---");
+    //Serial.println("Searching...");
   }
-
-  //Serial.println("---");
-  //Serial.println("verify: ");
-  //Serial.println(check);
 }
 
 // Function to read ultrasonic sensors distances
 void readDistances() {
-  //distance = ultrasonics[1].Ranging(CM);
   for (int i = 0; i < 3; i++) {
     distances[i] = ultrasonics[i].Ranging(CM);
-    //delay(check);
     delay(10);
 
     // Assign a default value if the sensor fails
@@ -135,10 +126,6 @@ void readDistances() {
     Serial.println(distances[i]);
     Serial.println("---");
   }
-  //if (distances[0] == 0 || distances[1] == 0 || distances[2] == 0)
-  //{
-  //  check++;
-  //}
 }
 
 // Interrupt function triggered when an edge is detected
@@ -155,7 +142,6 @@ void edgeFound() {
   distances[0] = 0;
   distances[1] = 0;
   distances[2] = 0;
-  //distance = 0;
 }
 
 void moveForward(float tension) {
