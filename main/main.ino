@@ -60,7 +60,7 @@ void setup() {
 void loop() {
   // If the robot detects an edge, execute an escape maneuver
   if (detectedEdge) {
-    Serial.print("ENCONTROU BORDA");
+    //Serial.print("ENCONTROU BORDA");
     edgeFound();
     detectedEdge = false;
   }
@@ -121,10 +121,10 @@ void readDistances() {
 
     // Assign a default value if the sensor fails
     if(distances[i] == 0) distances[i] = 150;
-    Serial.print("distances ");
-    Serial.println(i);
-    Serial.println(distances[i]);
-    Serial.println("---");
+    //Serial.print("distances ");
+    //Serial.println(i);
+    //Serial.println(distances[i]);
+    //Serial.println("---");
   }
 }
 
