@@ -82,10 +82,10 @@ void loop() {
     //Serial.println("FRONT object detected");
 
     moveForward(0.3);
-    //if (distances[1] > 30 && distances[1] <= 100) moveForward(0.4);
-    //else if (distances[1] > 10 && distances[1] <= 30) moveForward(0.7);
+    //if (distances[1] > 30 && distances[1] <= 100) moveForward(0.5);
+    //else if (distances[1] > 10 && distances[1] <= 30) moveForward(0.8);
     //else if (distances[1] <= 10) moveForward(1);
-    //else moveForward(0.3);
+    //else moveForward(0.4);
   }
 
   else if (distances[0] < 30 && distances[0] < distances[1] && distances[0] < distances[2]) {
@@ -139,6 +139,12 @@ void edgeFound() {
   delay(2000);
   turnRight(0.3);
   delay(500);
+
+  //moveBackward(0.6);
+  //delay(1000);
+  //turnRight(0.3);
+  //delay(500);
+  
   distances[0] = 0;
   distances[1] = 0;
   distances[2] = 0;
