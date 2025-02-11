@@ -1,5 +1,5 @@
 <div align="center"> 
-  <img src="./assets/selfie-sugar-boom.jpeg" alt="screenshot" />
+  <img src="./docs/selfie-sugar-boom.jpeg" alt="screenshot" />
    <h1>Robô de Sumô - SugarBoom</h1>
 </div>
 
