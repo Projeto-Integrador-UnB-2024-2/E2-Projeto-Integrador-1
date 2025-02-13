@@ -17,7 +17,7 @@ Este projeto consiste no desenvolvimento de um robô autônomo lutador de sumô,
 - Baterias de íon-lítio ICR18650-22P M (alimentação)
 - Linguagem C/C++ (programação embarcada)
 
-*Consulte a [documentação completa](./docs/PI1_2024_2Relatório_Final.pdf) do projeto para mais detalhes.* 
+*Consulte a [documentação completa](./docs/PI1_2024_2_Entrega_Final.pdf) do projeto para mais detalhes.* 
 
 ## 🏆 Equipe
 
